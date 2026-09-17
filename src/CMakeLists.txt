@@ -73,7 +73,9 @@ endif()
 file(GLOB SOURCES
     CONFIGURE_DEPENDS
     *.c
-    SMALLC/*c
+    BIOS/*.c
+    DOS/*.c
+    SMALLC/*.c
 )
 
 # message(Source list="${SOURCES}")
