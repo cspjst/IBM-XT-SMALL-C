@@ -34,9 +34,9 @@ add_compile_options(
 
     # === SIZE vs SPEED (pick ONE) ===
     -os                 # Optimize for CODE SIZE
-    -ox                 # Enable extra optimizations (dead code elimination)
-    -zp1                # Pack structs to 1-byte alignment (Critical for data size)
-    -fpi87              # Assume 8087 exists (removes software FP emulation stubs if any are pulled in)
+    # -ox                 # Enable extra optimizations (dead code elimination)
+    # -zp1                # Pack structs to 1-byte alignment (Critical for data size)
+    # -fpi87              # Assume 8087 exists (removes software FP emulation stubs if any are pulled in)
     # -ot               # Optimize for SPEED
     # -od               # Disable optimizations (debugging)
 
@@ -46,8 +46,8 @@ add_compile_options(
     -d2                # Full debug symbols
 
     # === STACK SAFETY ===
-    #-e0                 # No stack checking (saves ~20 bytes)
-    -e1               # Minimal stack overflow check
+    # -e0                 # No stack checking (saves ~20 bytes)
+    # -e1               # Minimal stack overflow check
 
     # === LANGUAGE COMPAT ===
     -za99               # Partial C99 (va_arg, etc.)
@@ -73,9 +73,7 @@ endif()
 file(GLOB SOURCES
     CONFIGURE_DEPENDS
     *.c
-    DOS/*.c
-    TEST/*.c
-    ../bioslib/src/BIOS/*.c
+    SMALLC/*c
 )
 
 # message(Source list="${SOURCES}")
