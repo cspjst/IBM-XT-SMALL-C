@@ -73,8 +73,6 @@ endif()
 file(GLOB SOURCES
     CONFIGURE_DEPENDS
     *.c
-    BIOS/*.c
-    DOS/*.c
     SMALLC/*.c
 )
 
