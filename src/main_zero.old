@@ -1,0 +1,72 @@
+
+#include <stdio.h>
+
+#define DRIVE        0x80
+#define MAX_RETRY    5
+#define RETRY_DELAY  500   /* ms between retries */
+
+static void fd_reset(void) {
+    __asm {
+        mov ah, 00h
+        mov dl, 80h
+        int 13h
+    }
+}
+
+static unsigned char fd_zero_sector0_once(void) {
+    static unsigned char buf[512] = {0};
+    unsigned char status;
+    __asm {
+        push ds
+        pop  es
+        lea  bx, buf
+        mov  ax, 0301h
+        mov  cx, 0001h
+        mov  dx, 0080h
+        int  13h
+        mov  status, ah
+    }
+    return status;
+}
+
+unsigned char fd_zero_sector0(void) {
+    unsigned char status;
+    int attempt;
+    for (attempt = 1; attempt <= MAX_RETRY; attempt++) {
+        fd_reset();
+        if (attempt > 1) delay(RETRY_DELAY);
+        status = fd_zero_sector0_once();
+        if (!status) return 0;
+        printf("attempt %d/%d failed (BIOS status 0x%02X)\n",
+               attempt, MAX_RETRY, status);
+    }
+    return status;
+}
+
+static int confirm(void) {
+    char line[8];
+    printf("Continue? [y/N]: ");
+    if (!fgets(line, sizeof line, stdin)) return 0;
+    return line[0] == 'y' || line[0] == 'Y';
+}
+
+int main(void) {
+    unsigned char r;
+
+    printf("zerosec0 -- zero sector 0 on drive 0x%02X\n"
+           "Wipes the boot sector / partition table. No undo.\n\n",
+           DRIVE);
+
+    if (!confirm()) {
+        printf("Aborted.\n");
+        return 1;
+    }
+
+    printf("Zeroing sector 0...\n");
+    if ((r = fd_zero_sector0()) != 0) {
+        printf("FAILED after %d attempts (BIOS status 0x%02X)\n", MAX_RETRY, r);
+        return 2;
+    }
+    printf("OK\n");
+    return 0;
+}

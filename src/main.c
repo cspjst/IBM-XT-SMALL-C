@@ -1,20 +1,45 @@
+#include <errno.h>
 #include <stdio.h>
-#include "DOS/dos_error.h"
-#include "DOS/dos_error_codes.h"
-#include "DOS/dos_memory_constants.h"
-#include "SMALLC/buffer.h"
+#include <stdlib.h>
 
-#define USAGE "usage: smallc <input_file> <output_file>\n"
+#include "BIOS/bios_clock_services.h"
+#include "BIOS/bios_clock_types.h"
+#include "BIOS/bios_clock_constants.h"
+
+#include "DOS/dos_file_tools.h"
+
+#define USAGE "usage: test <file_path> <buffer_size>\nERROR"
 
 int main(int argc, char* argv[]) {
-    switch(argc) {
-        case 3:
-            printf("%s %s %s\n", argv[0], argv[1], argv[2]);
-            printf("Max free = %liK\n", buffer_query_max_free() / DOS_MEM_SIZE_1K);
-            return 0;
-        default:
-            dos_perror(argv[argc - 1], DOS_INVALID_FORMAT);
-            fprintf(stderr, USAGE);
-            return 1;
+    errno = EINVAL;
+    if(argc != 3) goto error;
+    bios_ticks_since_midnight_t t1, t2;
+    dos_file_size_t sz = dos_get_file_size(argv[1]);
+    int type, k = atoi(argv[2]);
+    type = (k) ? _IOFBF : _IONBF;
+    printf(" buffer %s = %iK file %s = %li bytes %0.2fK\n", type == _IOFBF ?"yes" :"no",k, argv[1], sz, (float)sz / 1024.0);
+    k *= 1024;
+    char* buf = (char*)malloc(k);
+
+    FILE* f = fopen(argv[1], "r+");
+    if(!f) goto error;
+    if(setvbuf(f, buf, type, k) != 0) goto error;
+
+    bios_read_system_clock(&t1);
+
+    while(!feof(f)) {
+        fgetc(f);
+        //printf("%c",fgetc(f));
     }
+
+    bios_read_system_clock(&t2);
+    fclose(f);
+
+    printf("elapsed ticks %li - %li = %li i.e. %0.3f seconds", t2, t1, t2 - t1, (float)(t2 - t1) / BIOS_TICKS_PER_SECOND);
+    free(buf);
+    return 0;
+
+error:
+    perror(USAGE);
+    return 1;
 }

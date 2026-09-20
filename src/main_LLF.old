@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define DRIVE 0x80
+
+/* IBM Fixed Disk Adapter -- low-level format via INT 13h AH=07h. */
+unsigned char fd_llformat(unsigned char interleave) {
+    unsigned char status;
+    __asm {
+        mov ax, 0700h
+        mov al, interleave
+        mov cx, 0001h
+        mov dx, 0080h
+        int 13h
+        mov status, ah
+    }
+    return status;
+}
+
+/* Zero sector 0 so FDISK doesn't choke on stale partition data. */
+unsigned char fd_zero_sector0(void) {
+    static unsigned char buf[512] = {0};
+    unsigned char status;
+    __asm {
+        mov ah, 00h
+        mov dl, 80h
+        int 13h              ; reset disk system
+        push ds
+        pop  es
+        lea  bx, buf
+        mov  ax, 0301h
+        mov  cx, 0001h
+        mov  dx, 0080h
+        int  13h
+        mov  status, ah
+    }
+    return status;
+}
+
+static int confirm(void) {
+    char line[8];
+    printf("Continue? [y/N]: ");
+    if (!fgets(line, sizeof line, stdin)) return 0;
+    return line[0] == 'y' || line[0] == 'Y';
+}
+
+int main(int argc, char *argv[]) {
+    unsigned char interleave = argc > 1 ? (unsigned char)atoi(argv[1]) : 5;
+    unsigned char r;
+
+    printf("llformat -- IBM Fixed Disk Adapter low-level format\n"
+           "Drive     : 0x%02X (first fixed disk)\n"
+           "Interleave: %u\n\n"
+           "THIS DESTROYS ALL DATA ON THE DRIVE. There is no undo.\n\n",
+           DRIVE, interleave);
+
+    if (!confirm()) {
+        printf("Aborted.\n");
+        return 1;
+    }
+
+    printf("Formatting... ");
+    fflush(stdout);
+    if ((r = fd_llformat(interleave)) != 0) {
+        printf("FAILED (BIOS status 0x%02X)\n", r);
+        return 2;
+    }
+    printf("OK\n");
+
+    printf("Zeroing sector 0... ");
+    fflush(stdout);
+    if ((r = fd_zero_sector0()) != 0) {
+        printf("FAILED (BIOS status 0x%02X)\n", r);
+        return 3;
+    }
+    printf("OK\n\nDone. Run FDISK next.\n");
+    return 0;
+}
