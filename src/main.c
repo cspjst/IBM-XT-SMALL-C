@@ -31,8 +31,9 @@ int write_test(char* file_path, unsigned long k, unsigned long sz) {
     char* buf = (char*)malloc(k);
     if(setvbuf(f, buf, type, k) != 0) goto error;
 
+    fprintf(stderr, "writing...\n");
     bios_read_system_clock(&t1);
-    while(--sz) fputc('!', f);
+    while(sz--) fputc('!', f);
     bios_read_system_clock(&t2);
 
     fclose(f);
@@ -60,6 +61,7 @@ int read_test(char* file_path, unsigned long k) {
     char* buf = (char*)malloc(k);
     if(setvbuf(f, buf, type, k) != 0) goto error;
 
+    fprintf(stderr, "reading...\n");
     bios_read_system_clock(&t1);
     while(!feof(f)) fgetc(f);
     bios_read_system_clock(&t2);
@@ -83,20 +85,20 @@ int main(int argc, char* argv[]) {
     struct stat fstats;
 
 
-    if(stat(argv[1], &fstats) != 0) {
+    //if(stat(argv[1], &fstats) != 0) {
         if(write_test(argv[1], atoi(argv[2]), atoi(argv[3])) != 0) goto error;
         if(read_test(argv[1], atoi(argv[2])) != 0) goto error;
         if(remove(argv[1]) != 0) goto error;
         return 0;
-    }
-
+        //}
+/*
     fprintf(stderr, WARNING, argv[1]);
     if((char)getchar() == YES) {
         if(write_test(argv[1], atoi(argv[2]), atoi(argv[3])) != 0) goto error;
     }
     if(read_test(argv[1], atoi(argv[2])) != 0) goto error;
     return 0;
-
+*/
 error:
     perror(USAGE);
     return 1;
