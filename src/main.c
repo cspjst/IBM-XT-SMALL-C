@@ -13,7 +13,7 @@
 #define WARNING "WARNING: %s already exists, okay to overwrite? y/n "
 #define READING "READING: %s %li bytes %0.2fK read buffer %s %liK\n"
 #define WRITING "WRITING: %s %li bytes %0.2fK read buffer %s %liK\n"
-#define ELAPSED "elapsed ticks %li - %li = %li i.e. %0.3f seconds"
+#define ELAPSED "elapsed ticks %li - %li = %li i.e. %0.3f seconds\n"
 #define BUSY    "busy...\n"
 #define YES     'y'
 #define RAM1K   1024
@@ -34,11 +34,9 @@ int write_test(char* file_path, unsigned long k, unsigned long sz) {
     printf("WRITING: %s %li bytes %0.2fK read buffer %s %liK\n", file_path, sz, (float)sz / (float)RAM1K, type == _IOFBF ?"yes" :"no", k);
     k *= RAM1K;
     char* buf = (char*)malloc(k);
-    printf(" malloc ");
-    if(!buf) goto error;
-    printf(" setvbuf ");
     if(setvbuf(f, buf, type, k) != 0) goto error;
     printf(BUSY);
+
     bios_read_system_clock(&t1);
     while(--sz) fputc('!', f);
     bios_read_system_clock(&t2);
@@ -64,8 +62,8 @@ int read_test(char* file_path, unsigned long k) {
     printf(READING, file_path, sz, (float)sz / (float)RAM1K, type == _IOFBF ?"yes" :"no", k);
     k *= RAM1K;
     char* buf = (char*)malloc(k);
-    if(!buf) goto error;
     if(setvbuf(f, buf, type, k) != 0) goto error;
+    printf(BUSY);
 
     bios_read_system_clock(&t1);
     while(!feof(f)) fgetc(f);
