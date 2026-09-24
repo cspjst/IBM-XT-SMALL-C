@@ -50,7 +50,7 @@ add_compile_options(
     # -e1               # Minimal stack overflow check
 
     # === LANGUAGE COMPAT ===
-    -za99               # Partial C99 (va_arg, etc.)
+    # -za99               # Partial C99 (va_arg, etc.)
     # (omit for pure C89, slightly smaller)
 
     # === WARNINGS ===
@@ -73,8 +73,8 @@ endif()
 file(GLOB SOURCES
     CONFIGURE_DEPENDS
     *.c
-    BIOS/*.c
-    DOS/*.c
+    #BIOS/*.c
+    #DOS/*.c
     SMALLC/*.c
 )
 

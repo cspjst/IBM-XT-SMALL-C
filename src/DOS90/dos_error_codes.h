@@ -2,16 +2,12 @@
 * @author      Jeremy Simon Thornton
 * @copyright   2024, 2025, 2026 Jeremy Simon Thornton
 *
-* Of the following error codes, only error codes 1-12h are returned in AX upon exit from interrupt 21 or 24.
-* The rest are obtained by issuing the "get extended error" function call INT 21,59
-*
-* @url https://stanislavs.org/helppc/dos_error_codes.html
-*
 */
 #ifndef DOS_EERROR_CODES_H
 #define DOS_EERROR_CODES_H
-
-/* Error codes 1-12h returned in AX upon exit from interrupt 21 or 24 */
+/**
+* Classic 12h codes
+*/
 #define DOS_SUCCESS                                0
 #define DOS_INVALID_FUNCTION_NUMBER                1
 #define DOS_FILE_NOT_FOUND                         2
@@ -31,5 +27,4 @@
 #define DOS_ATTEMPT_TO_REMOVE_CURRENT_DIRECTORY    16
 #define DOS_NOT_SAME_DEVICE                        17
 #define DOS_NO_MORE_FILES                          18
-
 #endif

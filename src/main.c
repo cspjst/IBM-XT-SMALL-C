@@ -2,20 +2,15 @@
 #include <string.h>
 #include <errno.h>
 
-static char buffer[] = "foobar";
+#include "SMALLC/stream_flags.h"
 
 int main() {
 
-    int ch;
-        FILE *stream;
-
-
-        stream = fmemopen(buffer, strlen (buffer), "r");
-        if (stream == NULL) perror("ERROR: ");
-
-        while ((ch = fgetc(stream)) != EOF) printf("Got %c\n", ch);
-
-        fclose(stream);
-        return 0;
-
+    printf("%X\n",stream_mode_to_flags("r"));
+    printf("%X\n",stream_mode_to_flags("w"));
+    printf("%X\n",stream_mode_to_flags("a"));
+    printf("%X\n",stream_mode_to_flags("r+"));
+    printf("%X\n",stream_mode_to_flags("w+"));
+    printf("%X\n",stream_mode_to_flags("a+"));
+    return 0;
 }

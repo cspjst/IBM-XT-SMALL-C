@@ -6,6 +6,6 @@
 #ifndef DOS_ERROR_TYPES_H
 #define DOS_ERROR_TYPES_H
 
-typedef unsigned short dos_error_code_t;
+typedef int dos_error_code_t;
 
 #endif

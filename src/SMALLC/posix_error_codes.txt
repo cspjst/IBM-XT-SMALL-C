@@ -1,0 +1,31 @@
+/**
+* @author       Jeremy Simon Thornton
+* @copyright    2026 Jeremy Simon Thornton
+*
+* Subset of POSIX error codes
+*/
+#ifndef POSIX_ERROR_CODES_H
+#define POSIX_ERROR_CODES_H
+
+/* File I/O associated errors */
+#define EACCES          0x008F      /* Permission denied */
+#define EBADF           0x0090      /* Invalid file descriptor */
+#define EINTR           0x0091      /* Interrupted by a signal */
+#define EISDIR          0x0092      /* Path refers to a directory */
+#define ELOOP           0x0093      /* Too many symbolic links */
+#define EMFILE          0x0094      /* Process limit on open files/streams reached */
+#define ENFILE          0x0095      /* System-wide open-file limit reached */
+#define ENAMETOOLONG    0x0096      /* File or path name too long */
+#define ENOENT          0x0097      /* File or directory does not exist */
+#define ENOSPC          0x0098      /* No space left on device */
+#define ENOTDIR         0x0099      /* A path component is not a directory */
+#define ENOMEM          0x009A      /* Insufficient memory */
+#define EROFS           0x009B      /* Read-only file system */
+#define EINVAL          0x009C      /* Invalid argument */
+#define EEXIST          0x009D      /* File already exists */
+#define EIO             0x009E      /* Input/output error */
+#define ENXIO           0x009F      /* Device or address does not exist */
+#define EOVERFLOW       0x00A0      /* Result cannot be represented */
+#define ETXTBSY         0x00A1      /* Text file busy */
+
+#endif
