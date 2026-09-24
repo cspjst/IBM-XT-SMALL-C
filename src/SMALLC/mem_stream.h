@@ -17,9 +17,8 @@
 
 /**
  * A right half open interval of characters size n [0, n) where n < 65536 ie 64K bytes
- * Invariants:
- * + begin <= etx <= end
- * + begin <= pos <= end
+ * @note [begin, etx) is the data and [begin, end) the buffer itself.
+ * Invariant: begin <= pos <= etx <= end
  */
 typedef struct {
     int     flags;

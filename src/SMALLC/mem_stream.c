@@ -40,3 +40,12 @@ mem_file_t* mopen(void* buf, size_t size, const char* mode) {
     }
     return p;
 }
+
+int mclose(mem_file_t* mstream) {
+    if(mstream) {
+        free(mstream);
+        return 0;
+    }
+    errno = EBADF;
+    return EOF;
+}
