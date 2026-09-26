@@ -1,0 +1,224 @@
+
+IEEE Std 1003.1-2017
+POSIX.1-2017
+The Open Group Base Specifications Issue 7
+
+The POSIX stream functions are declared in:
+
+    #include <stdio.h>
+
+Opening and closing streams
+
+    FILE *fopen(const char *restrict path,
+                const char *restrict mode);
+    
+    FILE *freopen(const char *restrict path,
+                  const char *restrict mode,
+                  FILE *restrict stream);
+    
+    int fclose(FILE *stream);
+    
+    FILE *fdopen(int fd, const char *mode);
+
+fdopen() associates an existing file descriptor with a FILE stream.
+
+Character input and output
+
+    int fgetc(FILE *stream);
+    int getc(FILE *stream);
+    int getchar(void);
+    
+    int fputc(int c, FILE *stream);
+    int putc(int c, FILE *stream);
+    int putchar(int c);
+    
+    int ungetc(int c, FILE *stream);
+
+getc() and putc() may be implemented as macros.
+
+String input and output
+
+    char *fgets(char *restrict buffer,
+                int size,
+                FILE *restrict stream);
+    
+    int fputs(const char *restrict string,
+              FILE *restrict stream);
+    
+    int puts(const char *string);
+
+Block input and output
+
+    size_t fread(void *restrict buffer,
+                 size_t size,
+                 size_t count,
+                 FILE *restrict stream);
+    
+    size_t fwrite(const void *restrict buffer,
+                  size_t size,
+                  size_t count,
+                  FILE *restrict stream);
+
+Formatted input
+
+    int fscanf(FILE *restrict stream,
+               const char *restrict format, ...);
+    
+    int vfscanf(FILE *restrict stream,
+                const char *restrict format,
+                va_list args);
+    
+    int scanf(const char *restrict format, ...);
+    
+    int vscanf(const char *restrict format,
+               va_list args);
+
+Formatted output
+
+    int fprintf(FILE *restrict stream,
+                const char *restrict format, ...);
+    
+    int vfprintf(FILE *restrict stream,
+                 const char *restrict format,
+                 va_list args);
+    
+    int printf(const char *restrict format, ...);
+    
+    int vprintf(const char *restrict format,
+                va_list args);
+
+Positioning
+
+    int fseek(FILE *stream, long offset, int whence);
+    
+    long ftell(FILE *stream);
+    
+    void rewind(FILE *stream);
+    
+    int fgetpos(FILE *restrict stream,
+                fpos_t *restrict position);
+    
+    int fsetpos(FILE *restrict stream,
+                const fpos_t *restrict position);
+
+The whence values are:
+
+    SEEK_SET  /* Beginning of file */
+    SEEK_CUR  /* Current position */
+    SEEK_END  /* End of file */
+
+Buffering
+
+    void setbuf(FILE *restrict stream,
+                char *restrict buffer);
+    
+    int setvbuf(FILE *restrict stream,
+                char *restrict buffer,
+                int mode,
+                size_t size);
+    
+    int fflush(FILE *stream);
+
+The standard buffering modes are:
+
+    _IONBF  /* Unbuffered */
+    _IOLBF  /* Line buffered */
+    _IOFBF  /* Fully buffered */
+
+Stream state
+
+    void clearerr(FILE *stream);
+    
+    int feof(FILE *stream);
+    
+    int ferror(FILE *stream);
+    
+    void perror(const char *string);
+
+Use these instead of examining FILE internals:
+
+    if (feof(fp)) {
+        /* End-of-file indicator is set */
+    }
+    
+    if (ferror(fp)) {
+        /* Error indicator is set */
+    }
+    
+    clearerr(fp);
+
+File-descriptor association
+
+    int fileno(FILE *stream);
+
+fileno() is a POSIX function that returns the underlying file descriptor. It is not part of ISO C.
+
+Stream locking
+
+POSIX also defines functions for explicitly locking a stream:
+
+    void flockfile(FILE *stream);
+    
+    int ftrylockfile(FILE *stream);
+    
+    void funlockfile(FILE *stream);
+
+There are also unlocked variants:
+
+    int getc_unlocked(FILE *stream);
+    int getchar_unlocked(void);
+    
+    int putc_unlocked(int c, FILE *stream);
+    int putchar_unlocked(int c);
+
+These avoid stream locking and should only be used when the application has handled synchronization itself.
+
+Temporary files and names
+
+    FILE *tmpfile(void);
+    
+    char *tmpnam(char *buffer);
+    
+    char *tempnam(const char *directory,
+                  const char *prefix);
+
+tmpfile() is generally preferred. tmpnam() and tempnam() have security limitations.
+
+Process streams
+
+POSIX adds pipes connected to child processes:
+
+    FILE *popen(const char *command,
+                const char *mode);
+    
+    int pclose(FILE *stream);
+
+Example:
+
+    FILE *pipe = popen("dir", "r");
+    
+    if (pipe != NULL) {
+        char line[256];
+    
+        while (fgets(line, sizeof line, pipe) != NULL) {
+            fputs(line, stdout);
+        }
+    
+        pclose(pipe);
+    }
+
+POSIX memory streams
+
+Some POSIX versions also define:
+
+    FILE *fmemopen(void *buffer,
+                   size_t size,
+                   const char *mode);
+    
+    FILE *open_memstream(char **buffer,
+                         size_t *size);
+
+These are useful for treating memory as a FILE stream, but they are not available on every POSIX implementation or on classic 32-bit MinGW.
+
+The core POSIX stream functions are summarized in the official stdio.h interface. POSIX defines the functions and their behavior, but it does not define the internal fields of FILE or implementation-specific flags such as _IOREAD and _IOEOF. <citation src="4,5"></citation>
+
